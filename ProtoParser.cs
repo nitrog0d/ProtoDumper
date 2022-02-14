@@ -132,8 +132,15 @@ namespace ProtoDumper {
                             protoField = new ProtoField(new List<ProtoType>() { new ProtoType(CSharpTypeNameToProtoTypeName(foundProperty.PropertyType), foundProperty.PropertyType.Namespace == "Proto") }, foundProperty.Name, (int)field.Constant);
                             // fieldType = CSharpTypeNameToProtoTypeName(foundProperty.PropertyType);
                         }
-                        // Override for fixed32 in AbilityEmbryo proto
-                        if (type.Name == "AbilityEmbryo" && (foundProperty.Name == "AbilityNameHash" || foundProperty.Name == "AbilityOverrideNameHash")) {
+                        // Override for fixed32 in some protos
+                        if ((type.Name == "HomeVerifyData" && (foundProperty.Name == "Timestamp")) ||
+                            (type.Name == "HomePlantSubFieldData" && (foundProperty.Name == "EndTime")) ||
+                            (type.Name == "AbilityEmbryo" && (foundProperty.Name == "AbilityNameHash" || foundProperty.Name == "AbilityOverrideNameHash")) ||
+                            (type.Name == "HomeResource") && (foundProperty.Name == "NextRefreshTime") ||
+                            (type.Name == "HomePriorCheckNotify") && (foundProperty.Name == "EndTime") ||
+                            (type.Name == "FurnitureMakeBeHelpedData") && (foundProperty.Name == "Time") ||
+                            (type.Name == "HomeLimitedShopInfo") && (foundProperty.Name == "NextOpenTime" || foundProperty.Name == "NextGuestOpenTime" || foundProperty.Name == "NextCloseTime") ||
+                            (type.Name == "FurnitureMakeData") && (foundProperty.Name == "BeginTime" || foundProperty.Name == "AccelerateTime")) {
                             protoField = new ProtoField(new List<ProtoType>() { new ProtoType("fixed32") }, foundProperty.Name, (int)field.Constant);
                         }
                         if (!fieldsToExclude.Contains(foundProperty.Name)) protoFields.Add(protoField);
