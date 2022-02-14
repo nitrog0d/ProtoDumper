@@ -1,5 +1,7 @@
 # ProtoDumper
 
+### Please join our Discord for help: https://discord.gg/YupCkfGfZ3
+
 This program dumps Protocol Buffer definitions from Genshin Impact's [dumped assemblies](https://github.com/nitrog0d/Il2CppDumper-GenshinImpact), they are used for own made servers or packet analyzing.  
 ### **It requires unobfuscated assemblies** as I still didn't implement obfuscated assembly support.
 
