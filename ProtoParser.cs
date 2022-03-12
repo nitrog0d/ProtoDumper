@@ -6,10 +6,17 @@ namespace ProtoDumper {
     public class ProtoParser {
 
         private string AssemblyPath;
+        private string ProtoBase;
+        private string RepeatedMessageFieldName;
+        private const string RepeatedPrimitiveFieldName = "Google.Protobuf.Collections.RepeatedPrimitiveField`1";
+        private const string MapFieldName = "Google.Protobuf.Collections.MapField`2";
+        private const string MessageMapFieldName = "Google.Protobuf.Collections.MessageMapField`2";
         private ModuleDefinition Module;
 
-        public ProtoParser(string assemblyPath) {
+        public ProtoParser(string assemblyPath, string protoBase, string repeatedMessageFieldName) {
             AssemblyPath = assemblyPath;
+            ProtoBase = protoBase;
+            RepeatedMessageFieldName = repeatedMessageFieldName;
         }
 
         public List<Proto> Parse() {
@@ -17,7 +24,7 @@ namespace ProtoDumper {
             Module = ModuleDefinition.ReadModule(AssemblyPath);
 
             // Find the Proto base class
-            var protoBase = Module.GetType("Google.Protobuf.MessageBase");
+            var protoBase = Module.GetType(ProtoBase);
 
             if (protoBase == null) {
                 return null;
@@ -35,11 +42,6 @@ namespace ProtoDumper {
 
             return protos;
         }
-
-        private const string RepeatedPrimitiveFieldName = "Google.Protobuf.Collections.RepeatedPrimitiveField`1";
-        private const string RepeatedMessageFieldName = "Google.Protobuf.Collections.RepeatedMessageField`1";
-        private const string MapFieldName = "Google.Protobuf.Collections.MapField`2";
-        private const string MessageMapFieldName = "Google.Protobuf.Collections.MessageMapField`2";
 
         public Proto TypeToProto(TypeDefinition type, bool nested = false) {
             var properties = type.Properties;

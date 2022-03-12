@@ -18,6 +18,8 @@ namespace ProtoDumper {
         private const string OutputPathParam = "--output-path=";
         private const string ExportTypeParam = "--export-type=";
         private const string ExportExtensionParam = "--export-file-extension=";
+        private const string ProtoBaseParam = "--proto-base=";
+        private const string RepeatedMessageFieldClassParam = "--repeated-message-field-class=";
 
         [STAThread]
         public static void Main(string[] args) {
@@ -26,6 +28,8 @@ namespace ProtoDumper {
             ExportType exportType = ExportType.Proto;
             var exportFileExtension = "";
             var dontDeleteOldProtos = false;
+            var protoBase = "Google.Protobuf.MessageBase";
+            var repeatedMessageFieldClass = "Google.Protobuf.Collections.RepeatedMessageField`1";
 
             // If args are empty and assembly path is not defined, popup asking for the assembly
             if (args.Length == 0 && assemblyPath == "") {
@@ -72,6 +76,12 @@ namespace ProtoDumper {
                     else if (arg.StartsWith(ExportExtensionParam)) {
                         exportFileExtension = arg.Substring(ExportExtensionParam.Length);
                     }
+                    else if (arg.StartsWith(ProtoBaseParam)) {
+                        protoBase = arg.Substring(ProtoBaseParam.Length);
+                    }
+                    else if (arg.StartsWith(RepeatedMessageFieldClassParam)) {
+                        repeatedMessageFieldClass = arg.Substring(RepeatedMessageFieldClassParam.Length);
+                    }
                     else {
                         Console.WriteLine($"Unrecognized option {arg}, use -h for help.");
                     }
@@ -86,7 +96,7 @@ namespace ProtoDumper {
             }
 
             Console.WriteLine("Parsing protos...");
-            var protoParser = new ProtoParser(assemblyPath);
+            var protoParser = new ProtoParser(assemblyPath, protoBase, repeatedMessageFieldClass);
             var protos = protoParser.Parse();
             Console.WriteLine("Proto parsing done!");
 
@@ -129,6 +139,8 @@ namespace ProtoDumper {
             Console.WriteLine($"\t{OutputPathParam} - Optional. Output path");
             Console.WriteLine($"\t{ExportTypeParam} - Optional. Export type, can be typescript or proto");
             Console.WriteLine($"\t{ExportExtensionParam} - Optional. File extension used in the exported files");
+            Console.WriteLine($"\t{ProtoBaseParam} - Optional. Base class for protos");
+            Console.WriteLine($"\t{RepeatedMessageFieldClassParam} - Optional. Base class for repeated message fields");
         }
         private static void Exit() {
             Console.WriteLine("Press any key to exit...");
