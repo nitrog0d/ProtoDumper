@@ -27,6 +27,9 @@ namespace ProtoDumper {
             var protoBase = Module.GetType(ProtoBase);
 
             if (protoBase == null) {
+                Console.WriteLine("Could not find base class for protos! The assembly might be obfuscated or the name is actually wrong.");
+                Program.ShowHelp();
+                Program.Exit();
                 return null;
             }
 
@@ -77,7 +80,6 @@ namespace ProtoDumper {
                         }
                     }
                     protoOneofs.Add(new ProtoOneof(nestedType.Name.Substring(0, nestedType.Name.Length - 9), protoOneofEntries));
-                    // If type is a nested proto or cmd id
                 }
                 else if (nestedType.Name == "Types") {
                     foreach (var nestedType2 in nestedType.NestedTypes) {

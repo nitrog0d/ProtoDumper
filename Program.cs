@@ -98,7 +98,7 @@ namespace ProtoDumper {
             Console.WriteLine("Parsing protos...");
             var protoParser = new ProtoParser(assemblyPath, protoBase, repeatedMessageFieldClass);
             var protos = protoParser.Parse();
-            Console.WriteLine("Proto parsing done!");
+            Console.WriteLine($"Proto parsing done! {protos.Count} proto definitions found!");
 
             var outputDirectory = new DirectoryInfo(outputPath);
 
@@ -130,7 +130,7 @@ namespace ProtoDumper {
         }
 
         // Also based on Unhollower
-        private static void ShowHelp() {
+        public static void ShowHelp() {
             Console.WriteLine("Usage: ProtoDumper [parameters]");
             Console.WriteLine("Possible parameters:");
             Console.WriteLine($"\t{HelpParam}, {HelpParamShort} - Optional. Show this help");
@@ -142,7 +142,7 @@ namespace ProtoDumper {
             Console.WriteLine($"\t{ProtoBaseParam} - Optional. Base class for protos");
             Console.WriteLine($"\t{RepeatedMessageFieldClassParam} - Optional. Base class for repeated message fields");
         }
-        private static void Exit() {
+        public static void Exit() {
             Console.WriteLine("Press any key to exit...");
             Console.ReadKey();
             Environment.Exit(0);
