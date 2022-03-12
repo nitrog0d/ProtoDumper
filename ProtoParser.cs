@@ -134,7 +134,7 @@ namespace ProtoDumper {
                             protoField = new ProtoField(new List<ProtoType>() { new ProtoType(CSharpTypeNameToProtoTypeName(foundProperty.PropertyType), foundProperty.PropertyType.Namespace == "Proto") }, foundProperty.Name, (int)field.Constant);
                             // fieldType = CSharpTypeNameToProtoTypeName(foundProperty.PropertyType);
                         }
-                        // Override for fixed32 in some protos
+                        // Override for fixed32 in some protos of a very specific game
                         if ((type.Name == "HomeVerifyData" && (foundProperty.Name == "Timestamp")) ||
                             (type.Name == "HomePlantSubFieldData" && (foundProperty.Name == "EndTime")) ||
                             (type.Name == "AbilityEmbryo" && (foundProperty.Name == "AbilityNameHash" || foundProperty.Name == "AbilityOverrideNameHash")) ||

@@ -17,6 +17,8 @@ Possible parameters:
         --output-path= - Optional. Output path
         --export-type= - Optional. Export type, can be typescript or proto
         --export-file-extension= - Optional. File extension used in the exported files
+        --proto-base= - Optional. Base class for protos
+        --repeated-message-field-class= - Optional. Base class for repeated message fields
 ```
 
 ## Credits
