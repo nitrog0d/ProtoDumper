@@ -7,10 +7,12 @@ namespace ProtoDumper.Outputs {
     public class BaseDumper {
         private List<Proto> Protos;
         private string OutputFolder;
+        private bool DumpCmdIdEnums;
 
-        public BaseDumper(List<Proto> protos, string outputFolder) {
+        public BaseDumper(List<Proto> protos, string outputFolder, bool dumpCmdIdEnums = false) {
             Protos = protos;
             OutputFolder = outputFolder;
+            DumpCmdIdEnums = dumpCmdIdEnums;
         }
 
         public virtual string BuildFile(Proto proto) {
@@ -67,12 +69,13 @@ namespace ProtoDumper.Outputs {
             }
 
             foreach (var pEnum in proto.Enums) {
+                if (pEnum.Name == "CmdId" && !DumpCmdIdEnums) continue;
                 foreach (var line in DumpEnum(pEnum)) {
                     strings.Add("  " + line);
                 }
             }
 
-            foreach (var oneof in proto.Oneofs) {
+                foreach (var oneof in proto.Oneofs) {
                 foreach (var line in DumpOneof(oneof)) {
                     strings.Add("  " + line);
                 }
@@ -80,13 +83,13 @@ namespace ProtoDumper.Outputs {
 
             foreach (var field in proto.Fields) {
                 if (field.IsRepeated) {
-                    strings.Add($"  repeated {field.Types[0].Name}{(field.Name != "" ? $" {ToCamelCase(field.Name)}" : "")} = {field.FieldNumber};");
+                    strings.Add($"  repeated {field.Types[0].Name}{(field.Name != "" ? $" {ToSnakeCase(field.Name)}" : "")} = {field.FieldNumber};");
                 }
                 else if (field.IsMap) {
-                    strings.Add($"  map<{field.Types[0].Name}, {field.Types[1].Name}>{(field.Name != "" ? $" {ToCamelCase(field.Name)}" : "")} = {field.FieldNumber};");
+                    strings.Add($"  map<{field.Types[0].Name}, {field.Types[1].Name}>{(field.Name != "" ? $" {ToSnakeCase(field.Name)}" : "")} = {field.FieldNumber};");
                 }
                 else {
-                    strings.Add($"  {field.Types[0].Name}{(field.Name != "" ? $" {ToCamelCase(field.Name)}" : "")} = {field.FieldNumber};");
+                    strings.Add($"  {(proto.IsEnum ? ToSnakeCase(field.Types[0].Name).ToUpper() : field.Types[0].Name)}{(field.Name != "" ? $" {ToSnakeCase(field.Name)}" : "")} = {field.FieldNumber};");
                 }
             }
 
@@ -105,7 +108,7 @@ namespace ProtoDumper.Outputs {
             if (pEnum.Name.Equals("CmdId")) strings.Add("  option allow_alias = true;");
 
             foreach (var entry in pEnum.Entries) {
-                strings.Add($"  {entry.Name} = {entry.Value};");
+                strings.Add($"  {ToSnakeCase(entry.Name).ToUpper()} = {entry.Value};");
             }
             strings.Add("}");
 
@@ -117,7 +120,7 @@ namespace ProtoDumper.Outputs {
 
             strings.Add($"oneof {oneof.Name} {{");
             foreach (var entry in oneof.Entries) {
-                strings.Add($"  {entry.Type} {ToCamelCase(entry.Name)} = {entry.FieldNumber};");
+                strings.Add($"  {entry.Type} {ToSnakeCase(entry.Name)} = {entry.FieldNumber};");
             }
             strings.Add("}");
 
@@ -143,7 +146,7 @@ namespace ProtoDumper.Outputs {
             for (int i = 0; i < orderedPackets.Count; i++) {
                 var packet = orderedPackets[i];
                 writer.WriteLine($"  \"{packet.Key}\": \"{packet.Value}\"{((i + 1) != orderedPackets.Count ? "," : "")}");
-                // Exclude DebugNotify because it has a duplicated ID
+                // Exclude DebugNotify because it's ID is 101 and an actual proto uses that ID
                 if (packet.Key != "DebugNotify") writerReversed.WriteLine($"  \"{packet.Value}\": \"{packet.Key}\"{((i + 1) != orderedPackets.Count ? "," : "")}");
             }
 
@@ -161,5 +164,23 @@ namespace ProtoDumper.Outputs {
         }
 
         public string ToCamelCase(string str) => string.IsNullOrEmpty(str) || str.Length < 2 ? str : char.ToLowerInvariant(str[0]) + str.Substring(1);
+        public string ToSnakeCase(string text) {
+            if (text.Length < 2) {
+                return text;
+            }
+            var sb = new StringBuilder();
+            sb.Append(char.ToLowerInvariant(text[0]));
+            for (int i = 1; i < text.Length; ++i) {
+                char c = text[i];
+                if (char.IsUpper(c)) {
+                    sb.Append('_');
+                    sb.Append(char.ToLowerInvariant(c));
+                }
+                else {
+                    sb.Append(c);
+                }
+            }
+            return sb.ToString();
+        }
     }
 }

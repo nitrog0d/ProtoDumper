@@ -14,6 +14,7 @@ namespace ProtoDumper {
         private const string HelpParam = "--help";
         private const string HelpParamShort = "-h";
         private const string DontDeleteOldProtosParam = "--dont-delete-old-protos";
+        private const string DumpCmdIdEnumParam = "--dump-cmdid-enum";
         private const string AssemblyPathParam = "--assembly-path=";
         private const string OutputPathParam = "--output-path=";
         private const string ExportTypeParam = "--export-type=";
@@ -28,6 +29,7 @@ namespace ProtoDumper {
             ExportType exportType = ExportType.Proto;
             var exportFileExtension = "";
             var dontDeleteOldProtos = false;
+            var dumpCmdIdEnum = false;
             var protoBase = "Google.Protobuf.MessageBase";
             var repeatedMessageFieldClass = "Google.Protobuf.Collections.RepeatedMessageField`1";
 
@@ -50,6 +52,9 @@ namespace ProtoDumper {
                     }
                     else if (arg == DontDeleteOldProtosParam) {
                         dontDeleteOldProtos = true;
+                    }
+                    else if (arg == DumpCmdIdEnumParam) {
+                        dumpCmdIdEnum = true;
                     }
                     else if (arg.StartsWith(AssemblyPathParam)) {
                         assemblyPath = arg.Substring(AssemblyPathParam.Length);
@@ -120,7 +125,7 @@ namespace ProtoDumper {
                     break;
                 case ExportType.Proto:
                     Console.WriteLine("Using export type \"Proto\".");
-                    var dumperProto = new BaseDumper(protos, outputDirectory.FullName);
+                    var dumperProto = new BaseDumper(protos, outputDirectory.FullName, dumpCmdIdEnum);
                     dumperProto.Dump(exportFileExtension == "" ? "proto" : exportFileExtension);
                     break;
             }
@@ -135,6 +140,7 @@ namespace ProtoDumper {
             Console.WriteLine("Possible parameters:");
             Console.WriteLine($"\t{HelpParam}, {HelpParamShort} - Optional. Show this help");
             Console.WriteLine($"\t{DontDeleteOldProtosParam} - Optional. Stop the program from deleting old protos");
+            Console.WriteLine($"\t{DumpCmdIdEnumParam} - Optional. Makes the program dump CmdId enums (usually useless and protoc don't like them)");
             Console.WriteLine($"\t{AssemblyPathParam} - Optional. Path to the assembly that contains protos");
             Console.WriteLine($"\t{OutputPathParam} - Optional. Output path");
             Console.WriteLine($"\t{ExportTypeParam} - Optional. Export type, can be typescript or proto");

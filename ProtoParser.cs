@@ -89,8 +89,8 @@ namespace ProtoDumper {
                                 if (field.Name != "value__" && field.Name != "None") {
                                     // If the field is named CmdId, set the CmdId from it
                                     // if (field.Name == "CmdId" && nestedType2.Name != "CmdId") Console.WriteLine("Whoops wtf is this one: " + type.FullName); // It was DebugNotify
-                                    if (field.Name == "CmdId") cmdId = (int)field.Constant;
-                                    protoEnumContents.Add(new ProtoEnumEntry(field.Name, (int)field.Constant));
+                                    if (field.Name == "CmdId") cmdId = Convert.ToInt32(field.Constant);
+                                    protoEnumContents.Add(new ProtoEnumEntry(field.Name, Convert.ToInt32(field.Constant)));
                                 }
                             }
                             protoEnums.Add(new ProtoEnum(nestedType2.Name, protoEnumContents));
